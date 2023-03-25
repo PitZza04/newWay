@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
+model Region {
+  id          Int        @id @default(autoincrement())
+  region_name String
+  region_code String
+  province    Province[]
+}
+
+model Province {
+  id            Int    @id @default(autoincrement())
+  province_name String
+  region_id     Int
+  city          City[]
+  region        Region @relation(fields: [region_id], references: [id])
+}
+
+model City {
+  id          Int        @id @default(autoincrement())
+  city_name   String
+  province_id Int
+  barangay    Barangay[]
+  province    Province   @relation(fields: [province_id], references: [id])
+}
+
+model Barangay {
+  id            Int    @id @default(autoincrement())
+  barangay_name String
+  city_id       Int
+  city          City   @relation(fields: [city_id], references: [id])
+}
+
+model Parent {
+  id       Int     @id @default(autoincrement())
+  name     String
+  children Child[]
+}
+
+model Child {
+  id            Int          @id @default(autoincrement())
+  name          String
+  parentId      Int
+  parent        Parent       @relation(fields: [parentId], references: [id])
+  grandchildren Grandchild[]
+}
+
+model Grandchild {
+  id      Int    @id @default(autoincrement())
+  name    String
+  childId Int
+  child   Child  @relation(fields: [childId], references: [id])
+}
